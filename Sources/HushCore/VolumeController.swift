@@ -52,7 +52,10 @@ public final class VolumeController: VolumeControlling {
             mElement: kAudioObjectPropertyElementMain
         )
         AudioObjectSetPropertyData(defaultOutputDevice, &address, 0, nil, size, &vol)
-        isAdjusting = false
+        // Delay reset so the async property listener fires while isAdjusting is still true
+        DispatchQueue.main.async { [weak self] in
+            self?.isAdjusting = false
+        }
     }
 
     public func fadeToVolume(_ target: Float, duration: TimeInterval = 1.0, completion: (() -> Void)? = nil) {
