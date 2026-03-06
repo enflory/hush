@@ -16,7 +16,7 @@ swift run Hush
 
 ## How It Works
 
-Hush monitors macOS Now Playing metadata via the MediaRemote framework. When Spotify switches from music to an advertisement, the system volume is immediately reduced to a configurable floor level (default 5%). When music resumes, volume fades back to the previous level over ~1 second.
+Hush polls Spotify metadata via AppleScript every 2 seconds. When Spotify switches from music to an advertisement (detected by `spotify:ad:` URL prefix or metadata patterns), the system volume is immediately reduced to a configurable floor level (default 5%). When music resumes, volume fades back to the previous level over ~1 second.
 
 Volume is reduced, not muted, because Spotify detects muting and pauses playback.
 
