@@ -12,7 +12,6 @@ public protocol VolumeControlling {
 public final class VolumeController: VolumeControlling {
     private var fadeTimer: Timer?
     private(set) var isAdjusting = false
-    private var volumeChangeCallback: ((Float) -> Void)?
 
     public init() {}
 
@@ -52,10 +51,7 @@ public final class VolumeController: VolumeControlling {
             mElement: kAudioObjectPropertyElementMain
         )
         AudioObjectSetPropertyData(defaultOutputDevice, &address, 0, nil, size, &vol)
-        // Delay reset so the async property listener fires while isAdjusting is still true
-        DispatchQueue.main.async { [weak self] in
-            self?.isAdjusting = false
-        }
+        isAdjusting = false
     }
 
     public func fadeToVolume(_ target: Float, duration: TimeInterval = 1.0, completion: (() -> Void)? = nil) {
@@ -82,20 +78,5 @@ public final class VolumeController: VolumeControlling {
     public func cancelFade() {
         fadeTimer?.invalidate()
         fadeTimer = nil
-    }
-
-    /// Register a callback for when the user changes volume externally.
-    public func onExternalVolumeChange(_ callback: @escaping (Float) -> Void) {
-        volumeChangeCallback = callback
-        var address = AudioObjectPropertyAddress(
-            mSelector: kAudioHardwareServiceDeviceProperty_VirtualMainVolume,
-            mScope: kAudioDevicePropertyScopeOutput,
-            mElement: kAudioObjectPropertyElementMain
-        )
-        AudioObjectAddPropertyListenerBlock(defaultOutputDevice, &address, .main) { [weak self] _, _ in
-            guard let self = self, !self.isAdjusting else { return }
-            let newVolume = self.getVolume()
-            self.volumeChangeCallback?(newVolume)
-        }
     }
 }

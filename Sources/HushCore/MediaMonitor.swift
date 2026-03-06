@@ -30,12 +30,6 @@ public final class MediaMonitor: ObservableObject {
             self.checkNowPlaying()
         }
 
-        // Listen for external volume changes while dimmed
-        volumeController.onExternalVolumeChange { [weak self] newVolume in
-            guard let self = self, self.state == .dimmed else { return }
-            self.restoreTarget = newVolume
-        }
-
         checkNowPlaying()
     }
 
