@@ -3,11 +3,8 @@ import SwiftUI
 
 @main
 struct HushApp: App {
+    @NSApplicationDelegateAdaptor(HushAppDelegate.self) var appDelegate
     @StateObject private var appState = AppState()
-
-    init() {
-        NSApp.setActivationPolicy(.accessory)
-    }
 
     var body: some Scene {
         MenuBarExtra {
@@ -16,5 +13,11 @@ struct HushApp: App {
             Image(systemName: appState.isDimmed ? "speaker.slash" : "speaker.wave.2")
         }
         .menuBarExtraStyle(.window)
+    }
+}
+
+class HushAppDelegate: NSObject, NSApplicationDelegate {
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.accessory)
     }
 }
