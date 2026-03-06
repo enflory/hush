@@ -7,14 +7,6 @@ import Foundation
 public final class MediaRemoteBridge {
     public static let shared = MediaRemoteBridge()
 
-    // Retained for MediaMonitor compatibility until polling replaces notifications (Task 5)
-    public static let nowPlayingInfoDidChange = NSNotification.Name(
-        "kMRMediaRemoteNowPlayingInfoDidChangeNotification"
-    )
-    public static let nowPlayingApplicationDidChange = NSNotification.Name(
-        "kMRMediaRemoteNowPlayingApplicationDidChangeNotification"
-    )
-
     private let script: NSAppleScript?
 
     private static let appleScriptSource = """
@@ -34,10 +26,6 @@ public final class MediaRemoteBridge {
 
     private init() {
         script = NSAppleScript(source: Self.appleScriptSource)
-    }
-
-    public func registerForNotifications() {
-        // No-op: polling replaces notification-based monitoring
     }
 
     /// Get current Now Playing info. Calls completion synchronously with the result.
