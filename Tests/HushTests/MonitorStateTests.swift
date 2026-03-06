@@ -7,7 +7,7 @@ struct MonitorStateTests {
         var state = MonitorState.idle
         let action = state.transition(isSpotify: true, isAd: false, isPlaying: true)
         #expect(state == .normal)
-        #expect(action == .volumeRestored)
+        #expect(action == .noChange)
     }
 
     @Test func idleToDimmedOnAd() {
@@ -35,7 +35,7 @@ struct MonitorStateTests {
         var state = MonitorState.normal
         let action = state.transition(isSpotify: false, isAd: false, isPlaying: false)
         #expect(state == .idle)
-        #expect(action == .volumeRestored)
+        #expect(action == .noChange)
     }
 
     @Test func dimmedToIdleOnSpotifyStop() {
