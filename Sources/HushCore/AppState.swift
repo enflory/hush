@@ -24,6 +24,7 @@ public final class AppState: ObservableObject {
     }
 
     public let monitor: MediaMonitor
+    private var monitorCancellable: AnyCancellable?
 
     /// Status text for the UI
     public var statusText: String {
@@ -45,7 +46,7 @@ public final class AppState: ObservableObject {
         // Register defaults
         defaults.register(defaults: [
             "isEnabled": true,
-            "volumeFloor": Float(0.05),
+            "volumeFloor": Float(0.0625),
             "launchAtLogin": true,
         ])
 
@@ -53,6 +54,11 @@ public final class AppState: ObservableObject {
         self.volumeFloor = defaults.float(forKey: "volumeFloor")
         self.launchAtLogin = defaults.bool(forKey: "launchAtLogin")
         self.monitor = MediaMonitor()
+
+        // Forward monitor changes so SwiftUI re-evaluates isDimmed/statusText
+        monitorCancellable = monitor.objectWillChange.sink { [weak self] _ in
+            self?.objectWillChange.send()
+        }
 
         if isEnabled {
             monitor.start()
