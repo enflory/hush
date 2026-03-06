@@ -71,4 +71,28 @@ struct SpotifyAdClassifierTests {
         )
         #expect(classifier.isAd(metadata: metadata))
     }
+
+    @Test func detectsAdBySpotifyURL() {
+        let metadata = NowPlayingMetadata(
+            title: "Some Brand Ad",
+            artist: "Some Brand",
+            album: "",
+            bundleID: spotifyBundleID,
+            playbackRate: 1.0,
+            isAdByURL: true
+        )
+        #expect(classifier.isAd(metadata: metadata))
+    }
+
+    @Test func normalTrackWithAdURLFlagFalseIsNotAd() {
+        let metadata = NowPlayingMetadata(
+            title: "Bohemian Rhapsody",
+            artist: "Queen",
+            album: "A Night at the Opera",
+            bundleID: spotifyBundleID,
+            playbackRate: 1.0,
+            isAdByURL: false
+        )
+        #expect(!classifier.isAd(metadata: metadata))
+    }
 }
