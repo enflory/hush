@@ -1,82 +1,80 @@
 import Foundation
 
+/// Fetches Spotify's Now Playing metadata via AppleScript.
+///
+/// macOS 26 restricts MediaRemote private framework access to Apple-signed
+/// binaries, so we query Spotify directly instead.
 public final class MediaRemoteBridge {
     public static let shared = MediaRemoteBridge()
 
-    // Notification name
-    public static let nowPlayingInfoDidChange = NSNotification.Name(
-        "kMRMediaRemoteNowPlayingInfoDidChangeNotification"
-    )
-    public static let nowPlayingApplicationDidChange = NSNotification.Name(
-        "kMRMediaRemoteNowPlayingApplicationDidChangeNotification"
-    )
+    private let script: NSAppleScript?
 
-    // Info dictionary keys
-    public static let kTitle = "kMRMediaRemoteNowPlayingInfoTitle"
-    public static let kArtist = "kMRMediaRemoteNowPlayingInfoArtist"
-    public static let kAlbum = "kMRMediaRemoteNowPlayingInfoAlbum"
-    public static let kPlaybackRate = "kMRMediaRemoteNowPlayingInfoPlaybackRate"
-
-    // Function types matching MediaRemote C signatures
-    private typealias GetNowPlayingInfoFn = @convention(c) (
-        DispatchQueue, @escaping ([String: Any]) -> Void
-    ) -> Void
-    private typealias RegisterNotificationsFn = @convention(c) (DispatchQueue) -> Void
-    private typealias GetBundleIDFn = @convention(c) (
-        DispatchQueue, @escaping (CFString) -> Void
-    ) -> Void
-
-    private var getNowPlayingInfoFn: GetNowPlayingInfoFn?
-    private var registerNotificationsFn: RegisterNotificationsFn?
-    private var getBundleIDFn: GetBundleIDFn?
+    private static let appleScriptSource = """
+        tell application "System Events"
+            if not (exists process "Spotify") then return "NOT_RUNNING"
+        end tell
+        tell application "Spotify"
+            if player state is stopped then return "STOPPED"
+            set trackName to name of current track
+            set trackArtist to artist of current track
+            set trackAlbum to album of current track
+            set trackURL to spotify url of current track
+            set pState to player state as string
+            return trackName & "\\n" & trackArtist & "\\n" & trackAlbum & "\\n" & trackURL & "\\n" & pState
+        end tell
+        """
 
     private init() {
-        guard let handle = dlopen(
-            "/System/Library/PrivateFrameworks/MediaRemote.framework/MediaRemote", RTLD_LAZY
-        ) else {
-            print("Hush: Failed to load MediaRemote framework")
-            return
-        }
-
-        if let sym = dlsym(handle, "MRMediaRemoteGetNowPlayingInfo") {
-            getNowPlayingInfoFn = unsafeBitCast(sym, to: GetNowPlayingInfoFn.self)
-        }
-        if let sym = dlsym(handle, "MRMediaRemoteRegisterForNowPlayingNotifications") {
-            registerNotificationsFn = unsafeBitCast(sym, to: RegisterNotificationsFn.self)
-        }
-        if let sym = dlsym(handle, "MRMediaRemoteGetNowPlayingApplicationBundleIdentifier") {
-            getBundleIDFn = unsafeBitCast(sym, to: GetBundleIDFn.self)
-        }
+        script = NSAppleScript(source: Self.appleScriptSource)
     }
 
-    /// Call once at startup to register for Now Playing notifications.
-    public func registerForNotifications() {
-        registerNotificationsFn?(.main)
-    }
-
-    /// Get current Now Playing info. Calls completion with metadata on main queue.
+    /// Get current Now Playing info. Calls completion synchronously with the result.
     public func getNowPlayingInfo(completion: @escaping (NowPlayingMetadata?) -> Void) {
-        guard let getInfo = getNowPlayingInfoFn, let getBundleID = getBundleIDFn else {
+        guard let script = script else {
             completion(nil)
             return
         }
 
-        getBundleID(.main) { bundleID in
-            getInfo(.main) { info in
-                let title = info[MediaRemoteBridge.kTitle] as? String ?? ""
-                let artist = info[MediaRemoteBridge.kArtist] as? String ?? ""
-                let album = info[MediaRemoteBridge.kAlbum] as? String ?? ""
-                let playbackRate = info[MediaRemoteBridge.kPlaybackRate] as? Double ?? 0.0
+        var error: NSDictionary?
+        let result = script.executeAndReturnError(&error)
 
-                let metadata = NowPlayingMetadata(
-                    title: title,
-                    artist: artist,
-                    album: album,
-                    bundleID: bundleID as String,
-                    playbackRate: playbackRate
-                )
-                completion(metadata)
-            }
+        if error != nil {
+            completion(nil)
+            return
         }
+
+        guard let output = result.stringValue else {
+            completion(nil)
+            return
+        }
+
+        if output == "NOT_RUNNING" || output == "STOPPED" {
+            completion(nil)
+            return
+        }
+
+        let parts = output.components(separatedBy: "\n")
+        guard parts.count >= 5 else {
+            completion(nil)
+            return
+        }
+
+        let title = parts[0]
+        let artist = parts[1]
+        let album = parts[2]
+        let spotifyURL = parts[3]
+        let playerState = parts[4]
+        let isPlaying = playerState == "playing"
+        let isAdByURL = spotifyURL.hasPrefix("spotify:ad:")
+
+        let metadata = NowPlayingMetadata(
+            title: title,
+            artist: artist,
+            album: album,
+            bundleID: "com.spotify.client",
+            playbackRate: isPlaying ? 1.0 : 0.0,
+            isAdByURL: isAdByURL
+        )
+        completion(metadata)
     }
 }

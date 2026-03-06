@@ -9,7 +9,9 @@ public final class MediaMonitor: ObservableObject {
     private let classifier: AdClassifier
     private let volumeController: VolumeController
     private let bridge: MediaRemoteBridge
-    private var previousVolume: Float = 0.5
+    private var restoreTarget: Float = 0.5
+    private var pollTimer: Timer?
+    private static let pollInterval: TimeInterval = 2.0
 
     public init(
         classifier: AdClassifier = SpotifyAdClassifier(),
@@ -22,36 +24,18 @@ public final class MediaMonitor: ObservableObject {
     }
 
     public func start() {
-        bridge.registerForNotifications()
-
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(nowPlayingChanged),
-            name: MediaRemoteBridge.nowPlayingInfoDidChange,
-            object: nil
-        )
-
-        // Also listen for app changes
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(nowPlayingChanged),
-            name: MediaRemoteBridge.nowPlayingApplicationDidChange,
-            object: nil
-        )
-
-        // Listen for external volume changes while dimmed
-        volumeController.onExternalVolumeChange { [weak self] newVolume in
-            guard let self = self, self.state == .dimmed else { return }
-            // User changed volume during ad — update the restore target
-            self.previousVolume = newVolume
+        pollTimer?.invalidate()
+        pollTimer = Timer.scheduledTimer(withTimeInterval: Self.pollInterval, repeats: true) { [weak self] _ in
+            guard let self = self, self.isEnabled else { return }
+            self.checkNowPlaying()
         }
 
-        // Check current state on launch (handles launch mid-ad)
         checkNowPlaying()
     }
 
     public func stop() {
-        NotificationCenter.default.removeObserver(self)
+        pollTimer?.invalidate()
+        pollTimer = nil
         if state == .dimmed {
             restoreVolume()
         }
@@ -65,11 +49,6 @@ public final class MediaMonitor: ObservableObject {
         } else {
             stop()
         }
-    }
-
-    @objc private func nowPlayingChanged() {
-        guard isEnabled else { return }
-        checkNowPlaying()
     }
 
     private func checkNowPlaying() {
@@ -107,14 +86,14 @@ public final class MediaMonitor: ObservableObject {
     }
 
     private func dimVolume() {
-        previousVolume = volumeController.getVolume()
+        restoreTarget = volumeController.getVolume()
         let floor = UserDefaults.standard.float(forKey: "volumeFloor")
-        let effectiveFloor = floor > 0 ? floor : 0.05
+        let effectiveFloor = floor > 0 ? floor : 0.0625
         volumeController.cancelFade()
         volumeController.setVolume(effectiveFloor)
     }
 
     private func restoreVolume() {
-        volumeController.fadeToVolume(previousVolume, duration: 1.0, completion: nil)
+        volumeController.fadeToVolume(restoreTarget, duration: 1.0, completion: nil)
     }
 }

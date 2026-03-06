@@ -10,6 +10,8 @@ public struct SpotifyAdClassifier: AdClassifier {
     public func isAd(metadata: NowPlayingMetadata) -> Bool {
         guard metadata.bundleID == Self.spotifyBundleID else { return false }
 
+        if metadata.isAdByURL { return true }
+
         return Self.adTitles.contains(metadata.title) ||
                Self.adArtists.contains(metadata.artist)
     }

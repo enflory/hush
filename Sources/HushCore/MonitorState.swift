@@ -22,14 +22,14 @@ public enum MonitorState: Equatable {
                 return .volumeDimmed
             } else if isSpotify && isPlaying {
                 self = .normal
-                return .volumeRestored
+                return .noChange
             }
             return .noChange
 
         case .normal:
             if !isSpotify || !isPlaying {
                 self = .idle
-                return .volumeRestored
+                return .noChange
             } else if isAd {
                 self = .dimmed
                 return .volumeDimmed
