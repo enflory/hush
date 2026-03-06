@@ -1,27 +1,19 @@
-import SwiftUI
 import HushCore
+import SwiftUI
 
 @main
 struct HushApp: App {
+    @StateObject private var appState = AppState()
+
     init() {
         NSApp.setActivationPolicy(.accessory)
     }
 
     var body: some Scene {
-        MenuBarExtra("Hush", systemImage: "speaker.wave.2") {
-            VStack(spacing: 12) {
-                Text("Hush")
-                    .font(.headline)
-                Text("Ad Volume Reducer")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Divider()
-                Button("Quit") {
-                    NSApplication.shared.terminate(nil)
-                }
-            }
-            .padding()
-            .frame(width: 200)
+        MenuBarExtra {
+            SettingsView(appState: appState)
+        } label: {
+            Image(systemName: appState.isDimmed ? "speaker.slash" : "speaker.wave.2")
         }
         .menuBarExtraStyle(.window)
     }
