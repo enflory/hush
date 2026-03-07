@@ -12,8 +12,13 @@ struct SettingsView: View {
         VStack(alignment: .leading, spacing: 12) {
             // Header
             HStack {
-                Text("Hush")
-                    .font(.headline)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Hush")
+                        .font(.headline)
+                    Text("Auto-dims Spotify ads")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
                 Spacer()
                 Toggle("", isOn: $appState.isEnabled)
                     .toggleStyle(.switch)
