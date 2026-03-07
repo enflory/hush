@@ -13,6 +13,7 @@ public final class AppState: ObservableObject {
     @Published public var volumeFloor: Float {
         didSet {
             UserDefaults.standard.set(volumeFloor, forKey: "volumeFloor")
+            monitor.updateVolumeFloor(volumeFloor)
         }
     }
 
