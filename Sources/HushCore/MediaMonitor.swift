@@ -7,7 +7,7 @@ public final class MediaMonitor: ObservableObject {
     @Published public private(set) var isEnabled: Bool = true
 
     private let classifier: AdClassifier
-    private let volumeController: VolumeController
+    private let volumeController: VolumeControlling
     private let bridge: MediaRemoteBridge
     private var restoreTarget: Float = 0.5
     private var pollTimer: Timer?
@@ -15,7 +15,7 @@ public final class MediaMonitor: ObservableObject {
 
     public init(
         classifier: AdClassifier = SpotifyAdClassifier(),
-        volumeController: VolumeController = VolumeController(),
+        volumeController: VolumeControlling = VolumeController(),
         bridge: MediaRemoteBridge = .shared
     ) {
         self.classifier = classifier
@@ -84,6 +84,19 @@ public final class MediaMonitor: ObservableObject {
             }
         }
     }
+
+    public func updateVolumeFloor(_ floor: Float) {
+        guard state == .dimmed else { return }
+        let effectiveFloor = floor > 0 ? floor : 0.0625
+        volumeController.setVolume(effectiveFloor)
+    }
+
+    #if DEBUG
+    /// For testing only — set state directly.
+    public func simulateStateForTesting(_ newState: MonitorState) {
+        state = newState
+    }
+    #endif
 
     private func dimVolume() {
         restoreTarget = volumeController.getVolume()
