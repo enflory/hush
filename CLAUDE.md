@@ -44,7 +44,7 @@ AppleScript polling → MediaMonitor → AdClassifier → MonitorState → Volum
 
 ### UI
 
-Menu bar-only app (`NSApp.setActivationPolicy(.accessory)` in AppDelegate). Icon toggles between `speaker.wave.2` and `speaker.slash`. Popover uses `MenuBarExtra` with `.window` style.
+Menu bar-only app (`NSApp.setActivationPolicy(.accessory)` in AppDelegate). Icon toggles between `music.note` and `music.note.slash`. Popover uses `MenuBarExtra` with `.window` style.
 
 ## Key Conventions
 
