@@ -10,6 +10,10 @@ swift run Hush           # Build and run the app
 swift test               # Run all tests (17 tests)
 swift test --filter SpotifyAdClassifierTests   # Run ad classifier tests only
 swift test --filter MonitorStateTests          # Run state machine tests only
+make app                 # Build Hush.app bundle (output: build/Hush.app)
+make install             # Build and copy to /Applications
+make clean               # Remove build/ directory
+make icon                # Regenerate AppIcon.icns from SF Symbol
 ```
 
 ## Project Overview
