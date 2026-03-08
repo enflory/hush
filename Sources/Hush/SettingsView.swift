@@ -28,7 +28,11 @@ struct SettingsView: View {
             // Status
             Text(appState.statusText)
                 .font(.caption)
-                .foregroundColor(appState.isDimmed ? .orange : .secondary)
+                .foregroundColor(appState.isDimmed ? .white : .secondary)
+                .padding(.horizontal, appState.isDimmed ? 8 : 0)
+                .padding(.vertical, appState.isDimmed ? 3 : 0)
+                .background(appState.isDimmed ? Color.red.opacity(0.75) : Color.clear)
+                .clipShape(Capsule())
 
             Divider()
 
