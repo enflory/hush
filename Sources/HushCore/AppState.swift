@@ -42,6 +42,11 @@ public final class AppState: ObservableObject {
         isEnabled && monitor.state == .dimmed
     }
 
+    /// SF Symbol name for the menu bar icon reflecting current state
+    public var menuBarIcon: String {
+        isDimmed ? "music.note.slash" : "music.note"
+    }
+
     public init() {
         let defaults = UserDefaults.standard
         // Register defaults
