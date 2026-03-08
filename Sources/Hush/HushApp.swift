@@ -10,7 +10,7 @@ struct HushApp: App {
         MenuBarExtra {
             SettingsView(appState: appState)
         } label: {
-            Image(systemName: appState.isDimmed ? "speaker.slash" : "speaker.wave.2")
+            Image(systemName: appState.menuBarIcon)
         }
         .menuBarExtraStyle(.window)
     }
