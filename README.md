@@ -2,24 +2,31 @@
 
 A lightweight macOS menu bar app that automatically reduces system volume when Spotify plays ads, then restores it when music resumes.
 
+## Why?
+
+Spotify Free inserts audio ads between songs. You can't skip them, and muting doesn't work — Spotify detects it and pauses playback. Hush works around this by *reducing* (not muting) the volume to a near-silent floor, then smoothly fading it back up when your music returns.
+
 ## Install
 
-**Requirements:** macOS 13 (Ventura) or later, Spotify (free tier)
+**Requirements:** macOS 13 (Ventura) or later, [Xcode Command Line Tools](https://developer.apple.com/xcode/resources/)
 
 ```bash
 git clone https://github.com/enflory/hush.git
 cd hush
-make app
 make install
 ```
 
 This builds `Hush.app` and copies it to `/Applications`. Launch it from there — a music note icon will appear in your menu bar.
 
-On first launch, macOS will ask you to grant Hush permission to control System Events and Spotify. Accept both prompts.
+On first launch, macOS will ask you to grant Hush permission to control System Events and Spotify. Accept both prompts — these are needed for AppleScript-based metadata polling.
 
 ### Uninstall
 
-Drag `/Applications/Hush.app` to the trash.
+Drag `/Applications/Hush.app` to the trash. Hush stores preferences in `UserDefaults` under `com.hush.app`; to remove those as well:
+
+```bash
+defaults delete com.hush.app
+```
 
 ## How It Works
 
@@ -31,23 +38,29 @@ Volume is reduced, not muted, because Spotify detects muting and pauses playback
 
 Click the music note icon in the menu bar to access:
 
-- **On/Off toggle** -- Enable or disable ad detection
-- **Ad volume slider** -- Set how quiet ads should be (1%-25%)
-- **Launch at login** -- Start Hush automatically when you log in
+- **On/Off toggle** — Enable or disable ad detection
+- **Ad volume slider** — Set how quiet ads should be (1%–25%)
+- **Launch at login** — Start Hush automatically when you log in
 
 ## Development
 
 ```bash
 swift build              # Build all targets
 swift run Hush           # Run without installing
-swift test               # Run all tests
+swift test               # Run all tests (20)
 make app                 # Build Hush.app bundle
 make install             # Build and copy to /Applications
 make clean               # Remove build/ directory
 make icon                # Regenerate app icon from SF Symbol
 ```
 
-## Architecture
+### Architecture
+
+Two SPM targets: **HushCore** (library — all business logic) and **Hush** (executable — SwiftUI entry point). Tests import HushCore.
+
+```
+AppleScript polling → MediaMonitor → AdClassifier → MonitorState → VolumeController
+```
 
 ```
 Sources/
@@ -70,9 +83,19 @@ scripts/
   build-app.sh                # Assembles and codesigns .app bundle
   generate-icon.swift         # Generates AppIcon.icns from SF Symbol
 Tests/
-  HushTests/          # Unit tests
+  HushTests/          # Swift Testing unit tests
 ```
+
+## Contributing
+
+Contributions are welcome! Please open an issue first to discuss what you'd like to change.
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b my-feature`)
+3. Make your changes and add tests where applicable
+4. Run `swift test` to verify all tests pass
+5. Open a pull request
 
 ## License
 
-MIT
+[MIT](LICENSE)
