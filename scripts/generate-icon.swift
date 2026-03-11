@@ -2,7 +2,7 @@
 import AppKit
 import Foundation
 
-let symbolName = "speaker.slash.fill"
+let symbolName = "music.note"
 let iconsetDir = "Resources/AppIcon.iconset"
 let outputPath = "Resources/AppIcon.icns"
 

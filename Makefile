@@ -4,6 +4,7 @@ app:
 	./scripts/build-app.sh
 
 install: app
+	rm -rf /Applications/Hush.app
 	cp -R build/Hush.app /Applications/
 	@echo "Installed to /Applications/Hush.app"
 

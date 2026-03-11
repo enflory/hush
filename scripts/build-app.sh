@@ -1,14 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
+cd "$(dirname "$0")/.."
+
 APP_NAME="Hush"
 BUILD_DIR="build"
 APP_BUNDLE="$BUILD_DIR/$APP_NAME.app"
 CONTENTS="$APP_BUNDLE/Contents"
 
 echo "Building $APP_NAME..."
-swift build -c release
-
 BIN_PATH=$(swift build -c release --show-bin-path)
 
 echo "Assembling $APP_NAME.app..."
