@@ -69,6 +69,8 @@ public final class AppState: ObservableObject {
         if isEnabled {
             monitor.start()
         }
+
+        updateLoginItem()
     }
 
     private func updateLoginItem() {

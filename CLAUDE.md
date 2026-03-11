@@ -7,9 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 swift build              # Build all targets
 swift run Hush           # Build and run the app
-swift test               # Run all tests (17 tests)
+swift test               # Run all tests (20 tests)
 swift test --filter SpotifyAdClassifierTests   # Run ad classifier tests only
 swift test --filter MonitorStateTests          # Run state machine tests only
+make app                 # Build Hush.app bundle (output: build/Hush.app)
+make install             # Build and copy to /Applications
+make clean               # Remove build/ directory
+make icon                # Regenerate AppIcon.icns from SF Symbol
 ```
 
 ## Project Overview
@@ -40,7 +44,7 @@ AppleScript polling → MediaMonitor → AdClassifier → MonitorState → Volum
 
 ### UI
 
-Menu bar-only app (`NSApp.setActivationPolicy(.accessory)` in AppDelegate). Icon toggles between `speaker.wave.2` and `speaker.slash`. Popover uses `MenuBarExtra` with `.window` style.
+Menu bar-only app (`NSApp.setActivationPolicy(.accessory)` in AppDelegate). Icon toggles between `music.note` and `music.note.slash`. Popover uses `MenuBarExtra` with `.window` style.
 
 ## Key Conventions
 
