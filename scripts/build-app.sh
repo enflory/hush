@@ -9,7 +9,7 @@ APP_BUNDLE="$BUILD_DIR/$APP_NAME.app"
 CONTENTS="$APP_BUNDLE/Contents"
 
 echo "Building $APP_NAME..."
-# --show-bin-path implicitly triggers a full build before returning the path
+swift build -c release
 BIN_PATH=$(swift build -c release --show-bin-path)
 
 echo "Assembling $APP_NAME.app..."
