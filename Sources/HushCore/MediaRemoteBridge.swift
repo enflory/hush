@@ -66,6 +66,7 @@ public final class MediaRemoteBridge {
         let playerState = parts[4]
         let isPlaying = playerState == "playing"
         let isAdByURL = spotifyURL.hasPrefix("spotify:ad:")
+        let isPodcastByURL = spotifyURL.hasPrefix("spotify:episode:")
 
         let metadata = NowPlayingMetadata(
             title: title,
@@ -73,7 +74,8 @@ public final class MediaRemoteBridge {
             album: album,
             bundleID: "com.spotify.client",
             playbackRate: isPlaying ? 1.0 : 0.0,
-            isAdByURL: isAdByURL
+            isAdByURL: isAdByURL,
+            isPodcastByURL: isPodcastByURL
         )
         completion(metadata)
     }

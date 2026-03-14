@@ -11,6 +11,7 @@ public struct SpotifyAdClassifier: AdClassifier {
         guard metadata.bundleID == Self.spotifyBundleID else { return false }
 
         if metadata.isAdByURL { return true }
+        if metadata.isPodcastByURL { return false }
 
         return Self.adTitles.contains(metadata.title) ||
                Self.adArtists.contains(metadata.artist)

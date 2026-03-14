@@ -95,4 +95,16 @@ struct SpotifyAdClassifierTests {
         )
         #expect(!classifier.isAd(metadata: metadata))
     }
+
+    @Test func podcastEpisodeNotDetectedAsAd() {
+        let metadata = NowPlayingMetadata(
+            title: "Catalyst with Shayle Kann",
+            artist: "",
+            album: "Catalyst",
+            bundleID: spotifyBundleID,
+            playbackRate: 1.0,
+            isPodcastByURL: true
+        )
+        #expect(!classifier.isAd(metadata: metadata))
+    }
 }
