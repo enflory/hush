@@ -87,7 +87,7 @@ public final class MediaMonitor: ObservableObject {
 
     public func updateVolumeFloor(_ floor: Float) {
         guard state == .dimmed else { return }
-        let effectiveFloor = floor > 0 ? floor : 0.0625
+        let effectiveFloor = floor > 0 ? floor : 0.01
         volumeController.setVolume(effectiveFloor)
     }
 
@@ -101,7 +101,7 @@ public final class MediaMonitor: ObservableObject {
     private func dimVolume() {
         restoreTarget = volumeController.getVolume()
         let floor = UserDefaults.standard.float(forKey: "volumeFloor")
-        let effectiveFloor = floor > 0 ? floor : 0.0625
+        let effectiveFloor = floor > 0 ? floor : 0.01
         volumeController.cancelFade()
         volumeController.setVolume(effectiveFloor)
     }
