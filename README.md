@@ -18,7 +18,9 @@ Spotify Free inserts audio ads between songs. You can't skip them, and muting do
 
 1. Download `Hush.app.zip` from the [latest release](https://github.com/enflory/hush/releases/latest)
 2. Unzip and drag `Hush.app` to `/Applications`
-3. Launch Hush — a music note icon will appear in your menu bar
+3. Launch Hush — macOS will show an **"Hush Not Opened"** warning (the app is ad-hoc signed, not notarized, since I don't have an Apple Developer account)
+4. Click **Done**, then go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway**
+5. This is a one-time step — after that, Hush launches normally and a music note icon will appear in your menu bar
 
 ### Build from source
 
