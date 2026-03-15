@@ -2,6 +2,10 @@
 
 A lightweight macOS menu bar app that automatically reduces system volume when Spotify plays ads, then restores it when music resumes.
 
+| Listening | Ad detected |
+|:-:|:-:|
+| ![Hush listening](docs/images/screenshot-listening.png) | ![Hush ad detected](docs/images/screenshot-ad-detected.png) |
+
 ## Why?
 
 Spotify Free inserts audio ads between songs. You can't skip them, and muting doesn't work — Spotify detects it and pauses playback. Hush works around this by *reducing* (not muting) the volume to a near-silent floor, then smoothly fading it back up when your music returns.
