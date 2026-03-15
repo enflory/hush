@@ -52,7 +52,7 @@ public final class AppState: ObservableObject {
         // Register defaults
         defaults.register(defaults: [
             "isEnabled": true,
-            "volumeFloor": Float(0.0625),
+            "volumeFloor": Float(0.01),
             "launchAtLogin": true,
         ])
 

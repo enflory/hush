@@ -56,6 +56,6 @@ struct MediaMonitorUpdateVolumeFloorTests {
 
         monitor.updateVolumeFloor(0.0)
 
-        #expect(mockVolume.lastSetVolume == 0.0625)
+        #expect(mockVolume.lastSetVolume == 0.01)
     }
 }
