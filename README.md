@@ -12,7 +12,17 @@ Spotify Free inserts audio ads between songs. You can't skip them, and muting do
 
 ## Install
 
-**Requirements:** macOS 13 (Ventura) or later, [Xcode Command Line Tools](https://developer.apple.com/xcode/resources/)
+**Requirements:** macOS 13 (Ventura) or later
+
+### Download
+
+1. Download `Hush.app.zip` from the [latest release](https://github.com/enflory/hush/releases/latest)
+2. Unzip and drag `Hush.app` to `/Applications`
+3. Launch Hush — a music note icon will appear in your menu bar
+
+### Build from source
+
+Requires [Xcode Command Line Tools](https://developer.apple.com/xcode/resources/).
 
 ```bash
 git clone https://github.com/enflory/hush.git
@@ -20,13 +30,15 @@ cd hush
 make install
 ```
 
-This builds `Hush.app` and copies it to `/Applications`. Launch it from there — a music note icon will appear in your menu bar.
+This builds `Hush.app` and copies it to `/Applications`.
+
+### First launch
 
 On first launch, macOS will ask you to grant Hush permission to control System Events and Spotify. Accept both prompts — these are needed for AppleScript-based metadata polling.
 
 ### Uninstall
 
-Drag `/Applications/Hush.app` to the trash. Hush stores preferences in `UserDefaults` under `com.hush.app`; to remove those as well:
+Drag `Hush.app` from `/Applications` to the trash. To also remove preferences:
 
 ```bash
 defaults delete com.hush.app
